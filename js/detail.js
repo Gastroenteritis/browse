@@ -40,6 +40,9 @@ onReady = async function() {
     const cookies = getCookieArray();
     $("input[name='mail']").val(cookies['MAIL']);
     $("input[name='FROM']").val(cookies['NAME']);
+
+    // スクロールボタンの制御を定義
+    initScrollButtonControll();
 }
 
 /**
@@ -49,33 +52,33 @@ onLoad = async function() {
     // ページをスクロール
     loadScroll();
 
-    // スクロール位置の記憶を定義
+    // スクロール位置の記憶開始
     $(window).scroll(function() {
         saveScroll();
     });
-
-    // スクロールによる要素の制御
-    initScrollButtonControll();
 }
 
 /**
  * スクロールボタンの制御を定義する。
  */
 function initScrollButtonControll() {
+    // 初期化
     const $document = $(document);
     const $window = $(window);
     let showTopButton = false;
-    let showBottomButton = false;
+    let showBottomButton = true;
     const $topButton = $(".topButton");
     const $bottomButton = $(".bottomButton");
-    $topButton.click(scrollToTop);
     $topButton.hide();
+    const topButtonHeight = 200;
+    const bottomButtonHeight = 200;
+    $topButton.click(scrollToTop);
     $bottomButton.click(scrollToBottom);
-    $bottomButton.hide();
 
+    // ボタン制御を定義
     $(window).scroll(function () {
         // "トップへ"ボタンの制御
-        if ($window.scrollTop() > 200) {
+        if ($window.scrollTop() > topButtonHeight) {
             if (showTopButton == false) {
                 showTopButton = true;
                 $topButton.show();
@@ -87,7 +90,7 @@ function initScrollButtonControll() {
             }
         }
         // "最下部へ"ボタンの制御
-        if ($document.height() - $window.height() - $window.scrollTop() > 200) {
+        if ($document.height() - $window.height() - $window.scrollTop() > bottomButtonHeight) {
             if (showBottomButton == false) {
                 showBottomButton = true;
                 $bottomButton.show();
@@ -130,49 +133,6 @@ function saveScroll() {
         url: location.href,
         position: $document.height() - $window.height() - $window.scrollTop()
     }));
-}
-
-/**
- * スクロールボタンの制御を定義する。
- */
-function initScrollButtonControll() {
-    const $document = $(document);
-    const $window = $(window);
-    let showTopButton = false;
-    let showBottomButton = false;
-    const $topButton = $(".topButton");
-    const $bottomButton = $(".bottomButton");
-    $topButton.click(scrollToTop);
-    $topButton.hide();
-    $bottomButton.click(scrollToBottom);
-    $bottomButton.hide();
-
-    $(window).scroll(function () {
-        // "トップへ"ボタンの制御
-        if ($window.scrollTop() > 200) {
-            if (showTopButton == false) {
-                showTopButton = true;
-                $topButton.show();
-            }
-        } else {
-            if (showTopButton) {
-                showTopButton = false;
-                $topButton.hide();
-            }
-        }
-        // "最下部へ"ボタンの制御
-        if ($document.height() - $window.height() - $window.scrollTop() > 200) {
-            if (showBottomButton == false) {
-                showBottomButton = true;
-                $bottomButton.show();
-            }
-        } else {
-            if (showBottomButton) {
-                showBottomButton = false;
-                $bottomButton.hide();
-            }
-        }
-    });
 }
 
 /**
