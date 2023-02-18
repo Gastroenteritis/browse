@@ -22,74 +22,91 @@ $(function() {
         $(".default-show").hide();
 
         // スクロールによる要素の制御
-        let showFlgBottom = false;
-        let showFlgTop = false;
-        const $showBottomButton = $(".showBottomButton");
-        const $showTopButton = $(".showTopButton");
-        if($showBottomButton || $showBottmtop) {
-            $(window).scroll(function () {
-                if ($(window).scrollTop() > 200) {
-                    if (showFlgBottom == false) {
-                        showFlgBottom = true;
-                        $showBottomButton.show();
-                    }
-                } else {
-                    if (showFlgBottom) {
-                        showFlgBottom = false;
-                        $showBottomButton.hide();
-                    }
-                }
-                console.log(showFlgTop)
-
-                if ($(window).scrollTop() < 200) {
-                    if (showFlgTop == false) {
-                        showFlgTop = true;
-                        $showTopButton.show();
-                    }
-                } else {
-                    if (showFlgTop) {
-                        showFlgTop = false;
-                        $showTopButton.hide();
-                    }
-                }
-            });
-        }
+        initScrollButtonControll();
     })
 });
 
 /**
- * saveScroll()で保存したオブジェクトを取り出し、デシリアライズしたのち、
- * 現在のURLが同一のものであるならスクロールを実行します。
+ * スクロールボタンの制御を定義する。
+ */
+function initScrollButtonControll() {
+    const $document = $(document);
+    const $window = $(window);
+    let showTopButton = false;
+    let showBottomButton = false;
+    const $topButton = $(".topButton");
+    const $bottomButton = $(".bottomButton");
+    $topButton.click(scrollToTop);
+    $topButton.hide();
+    $bottomButton.click(scrollToBottom);
+    $bottomButton.hide();
+
+    $(window).scroll(function () {
+        // "トップへ"ボタンの制御
+        if ($window.scrollTop() > 200) {
+            if (showTopButton == false) {
+                showTopButton = true;
+                $topButton.show();
+            }
+        } else {
+            if (showTopButton) {
+                showTopButton = false;
+                $topButton.hide();
+            }
+        }
+        // "最下部へ"ボタンの制御
+        if ($document.height() - $window.height() - $window.scrollTop() > 200) {
+            if (showBottomButton == false) {
+                showBottomButton = true;
+                $bottomButton.show();
+            }
+        } else {
+            if (showBottomButton) {
+                showBottomButton = false;
+                $bottomButton.hide();
+            }
+        }
+    });
+}
+
+function scrollToTop() {
+    $('html, body').animate({ scrollTop: 0 }, 'fast');
+}
+
+function scrollToBottom() {
+    $('html, body').animate({ scrollTop: $(document).height() }, 'fast');
+}
+
+/**
+ * 記憶されたスクロール位置を復元します。
+ * ただし、現在のURLと記憶されたURLが一致しない場合は復元しません。
  */
 function loadScroll() {
-    // スクロール位置を再現
+    const $document = $(document);
+    const $window = $(window);
     var obj = sessionStorage.getItem("LASTPOSITION");
     obj = JSON.parse(obj);
-    console.log(obj);
+
     if(obj !== null && obj.url !== null && obj.position !== null) {
         if(location.href == obj.url) {
-            window.scrollTo(0, obj.position);
+            $window.scrollTop($document.height() - $window.height() - obj.position);
         }
     }
 }
 
 /**
- * 現在のスクロール位置とURLを持ったオブジェクトをシリアライズしてセッションストレージに保存します。
+ * 現在のスクロール位置を記憶します。
+ * 現在のURLとスクロール位置をJSON形式でセッションストレージに保存します。
  */
 function saveScroll() {
+    const $document = $(document);
+    const $window = $(window);
+
     sessionStorage.setItem("LASTPOSITION", JSON.stringify({
         url: location.href,
-        position: window.scrollY
+        position: $document.height() - $window.height() - $window.scrollTop()
     }));
 }
-
-function getScrollBottom() {
-    var body = window.document.body;
-    var html = window.document.documentElement;
-    var scrollTop = body.scrollTop || html.scrollTop;
-    return html.scrollHeight - html.clientHeight - scrollTop;
-}
-
 
 /**
  * エラーの出力を行い、その後従来版へ遷移します。
