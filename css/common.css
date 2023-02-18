@@ -58,3 +58,7 @@
     right: 20px;
     z-index: 10000;
 }
+.img-fluid{
+    width: auto;
+    max-height: 720px;
+}

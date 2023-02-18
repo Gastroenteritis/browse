@@ -11,6 +11,8 @@ EscapeSJIS=function(str){
 	})
 };
 
+
+
 UnescapeSJIS=function(str){
 	return str.replace(/%(8[1-9A-F]|[9E][0-9A-F]|F[0-9A-C])(%[4-689A-F][0-9A-F]|%7[0-9A-E]|[@-~])|%([0-7][0-9A-F]|A[1-9A-F]|[B-D][0-9A-F])/ig,function(s){
 		var c=parseInt(s.substring(1,3),16),l=s.length;
