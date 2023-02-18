@@ -31,6 +31,17 @@ class Response {
                 const id = url.match(/https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/)[1];
                 return '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
             }
+            // Twitter
+            else if(url.match(/https:\/\/twitter\.com\/([a-zA-Z0-9_-]+)\/status\/([0-9]+)/)) {
+                const id = url.match(/https:\/\/twitter\.com\/([a-zA-Z0-9_-]+)\/status\/([0-9]+)/)[2];
+                return '<blockquote class="twitter-tweet"><a href="' + url + '"></a></blockquote><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>';
+            }
+            // nicovideo
+            else if(url.match(/https:\/\/www\.nicovideo\.jp\/watch\/([a-zA-Z0-9]+)/)) {
+                const id = url.match(/https:\/\/www\.nicovideo\.jp\/watch\/([a-zA-Z0-9]+)/)[1];
+                return '<iframe width="560" height="315" src="https://embed.nicovideo.jp/watch/' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            }
+            // 
             // ‚»‚Ì‘¼‚ÌƒŠƒ“ƒN
             else {
                 return '<a href="' + url + '" target="_blank">' + url + '</a>';
