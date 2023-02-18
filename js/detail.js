@@ -29,7 +29,8 @@ onReady = async function() {
         value: thread.getKey(),
     }));
     // 送信ボタンの初期化
-    $("button#post-button").click(function() {
+    $button = $("button#post-button");
+    $button.click(function() {
         thread.write($form).fail(function() {
             $(".post-input").prop('disabled', false);
         });
@@ -40,6 +41,16 @@ onReady = async function() {
     const cookies = getCookieArray();
     $("input[name='mail']").val(cookies['MAIL']);
     $("input[name='FROM']").val(cookies['NAME']);
+
+    // フォームポストのショートカットを定義
+    //Shiftキー+エンター ←今回のやりたかったこと
+    $(window).keydown(function(e){
+        if(e.shiftKey){
+            if(e.keyCode === 13){
+                $button.click();
+            }
+        }
+    });
 }
 
 /**
