@@ -1,111 +1,60 @@
-// 脈々と受け継がれる呪い
+/**
+ * ajaxの共通設定
+ */
 $.ajaxSetup({
     beforeSend : function(xhr) {
         xhr.overrideMimeType('text/html;charset=Shift_JIS');
     }
 });
 
-
-// 主役
+/**
+ * ボードの情報を保持するクラス
+ */
 const board = new Board();
+
+/**
+ * onReadyの前に実行する処理を登録する
+ */
 const promises = [];
 promises.push(board.loadSetting());
 promises.push(board.loadThreadList());
-var main = function() {}; // お好みにオーバーライドする
 
-$(function() {
-    Promise.all(promises).then(values => {
+/**
+ * ページの構成を行う前に実行する処理を登録する
+ */
+var onReady = async function() {}; // お好みにオーバーライドする
+
+/**
+ * ページの構成後に実行する処理を登録する
+ */
+var onLoad = async function() {}; // お好みにオーバーライドする
+
+$(async function() {
+    Promise.all(promises).then(async function() {
+        // ページの構成
         $("#nav-title").text(board.setting["BBS_TITLE"]);
         $("title").text(board.setting["BBS_TITLE"]);
-        main();
-        $(".default-hidden").show(); // ぱっと切り替えた方がかっこいい
+        await onReady();
+        
+        // ページの構成後の処理
+        $(".default-hidden").show();
         $(".default-show").hide();
-
-        // スクロールによる要素の制御
-        initScrollButtonControll();
+        await onLoad();
     })
 });
 
 /**
- * スクロールボタンの制御を定義する。
+ * ウィンドウ最上部へスクロールする
  */
-function initScrollButtonControll() {
-    const $document = $(document);
-    const $window = $(window);
-    let showTopButton = false;
-    let showBottomButton = false;
-    const $topButton = $(".topButton");
-    const $bottomButton = $(".bottomButton");
-    $topButton.click(scrollToTop);
-    $topButton.hide();
-    $bottomButton.click(scrollToBottom);
-    $bottomButton.hide();
-
-    $(window).scroll(function () {
-        // "トップへ"ボタンの制御
-        if ($window.scrollTop() > 200) {
-            if (showTopButton == false) {
-                showTopButton = true;
-                $topButton.show();
-            }
-        } else {
-            if (showTopButton) {
-                showTopButton = false;
-                $topButton.hide();
-            }
-        }
-        // "最下部へ"ボタンの制御
-        if ($document.height() - $window.height() - $window.scrollTop() > 200) {
-            if (showBottomButton == false) {
-                showBottomButton = true;
-                $bottomButton.show();
-            }
-        } else {
-            if (showBottomButton) {
-                showBottomButton = false;
-                $bottomButton.hide();
-            }
-        }
-    });
-}
-
 function scrollToTop() {
-    $('html, body').animate({ scrollTop: 0 }, 'fast');
+    $('html, body').scrollTop(0);
 }
 
+/**
+ * ウィンドウ最下部へスクロールする
+ */
 function scrollToBottom() {
-    $('html, body').animate({ scrollTop: $(document).height() }, 'fast');
-}
-
-/**
- * 記憶されたスクロール位置を復元します。
- * ただし、現在のURLと記憶されたURLが一致しない場合は復元しません。
- */
-function loadScroll() {
-    const $document = $(document);
-    const $window = $(window);
-    var obj = sessionStorage.getItem("LASTPOSITION");
-    obj = JSON.parse(obj);
-
-    if(obj !== null && obj.url !== null && obj.position !== null) {
-        if(location.href == obj.url) {
-            $window.scrollTop($document.height() - $window.height() - obj.position);
-        }
-    }
-}
-
-/**
- * 現在のスクロール位置を記憶します。
- * 現在のURLとスクロール位置をJSON形式でセッションストレージに保存します。
- */
-function saveScroll() {
-    const $document = $(document);
-    const $window = $(window);
-
-    sessionStorage.setItem("LASTPOSITION", JSON.stringify({
-        url: location.href,
-        position: $document.height() - $window.height() - $window.scrollTop()
-    }));
+    $('html, body').scrollTop($(document).height());
 }
 
 /**
