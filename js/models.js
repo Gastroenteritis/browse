@@ -196,7 +196,7 @@ class Board {
                 }).html(thread.title + " (" + thread.count + ")").append(
                     $("<div></div>", {
                         style: "font-size: 10px; color: gray;"
-                    }).append("<div></div>").text(thread.datetime.getFullYear() + "/" + thread.datetime.getMonth() + "/" + thread.datetime.getDate() + " " + thread.datetime.getHours() + ":" + thread.datetime.getMinutes())
+                    }).append("<div></div>").text(thread.datetime.getFullYear() + "/" + (thread.datetime.getMonth() + 1) + "/" + thread.datetime.getDate() + " " + thread.datetime.getHours() + ":" + thread.datetime.getMinutes())
                 )
             );
             $elem.append($row);
