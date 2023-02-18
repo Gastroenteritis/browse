@@ -25,14 +25,14 @@
         <div class="default-hidden container-fluid p-0" style="display: none;" id="main">
             <div class="flex-row d-flex">
                 <!--サイドバー-->
-                <div class="d-none d-md-block border border-secondary vh-100 sticky-top bg-light overflow-scroll" style="max-width: 350px; min-width: 350px">
+                <div class="d-none d-md-block border-end border-secondary vh-100 sticky-top bg-light overflow-scroll" style="max-width: 350px; min-width: 350px">
                     <div id="side-bar" class="container-fluid p-2"></div>
                 </div>
                 <!--メインのコンテナ-->
                 <div class="container-fluid">
                     <!--ナビゲーションバー-->
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col-12 p-0 border-bottom border-secondary">
                             <nav class="navbar navbar-expand-xl navbar-light bg-light">
                                 <div class="container-fluid">
                                     <a class="navbar-brand" href="./index.html" id="nav-title"></a>
@@ -62,7 +62,7 @@
                     </div>
                     <!--レス一覧-->
                     <div class="row">
-                        <div class="col-12 border border-secondary" id="response-list">
+                        <div class="col-12" id="response-list">
                            <!--ボタンとか-->
                            <div class="gotop topButton">トップへ</div>
                            <div class="gobottom bottomButton">最下部へ</div>
@@ -71,7 +71,7 @@
                     <div></div>
                     <!--書き込み欄-->
                     <div class="row">
-                        <div class="col-12 border border-secondary">
+                        <div class="col-12">
                             <form method="POST" action="../../test/bbs.cgi" class="p-3 container-fluid" id="post-form">
                                 <div class="row row-cols-auto">
                                     <div class="col mb-2">
