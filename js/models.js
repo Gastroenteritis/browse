@@ -15,16 +15,46 @@ class Response {
         this.id = id;
     }
 
+    // /**
+    //  * Aタグを生成する
+    //  * @param {*} text 
+    //  * @returns 
+    //  */
+    // replaceLink(text) {
+    //     return text.replace(/(https?:\/\/[\x21-\x7e]+)/g, '<a href="$1" target="_blank">$1</a>');
+    // }
+
+    // /**
+    //  * Imgタグを生成する
+    //  * @param {*} text 
+    //  * @returns 
+    //  */
+    // replaceImage(text) {
+    //     return text.replace(/(https?:\/\/[\x21-\x7e]+\.(jpg|jpeg|png|gif))/g, '<img src="$1" alt="$1" class="img-fluid">');
+    // }
+
     /**
-     * テキストのリンクを置換する
+     * AタグとImgタグを生成する
      * @param {*} text 
      */
-    replaceLink(text) {
-        return text.replace(/(https?:\/\/[\x21-\x7e]+)/g, '<a href="$1" target="_blank">$1</a>');
+    replaceHtml(text) {
+        const self = this;
+        return text.replace(/(https?:\/\/[\x21-\x7e]+)/g, function(url) {
+            if(url.match(/\.(jpg|jpeg|png|gif)$/)) {
+                return '<img src="' + url + '" alt="' + url + '" class="img-fluid">';
+            } else {
+                return '<a href="' + url + '" target="_blank">' + url + '</a>';
+            }
+        });
     }
 
+    /**
+     * このインスタンスの内容をHTML要素に変換します。
+     * @returns 
+     */
     toHTML() {
         const self = this;
+        let message = self.replaceHtml(self.message);
         const $elem = $("<div></div>", {
             class: "container-fluid border-top",
         });
@@ -44,7 +74,7 @@ class Response {
         }).text(self.id));
         const $body = $("<div></div>", {
             class: "text-break"
-        }).html(self.replaceLink(self.message));
+        }).html(message);
         const $footer = $("<div></div>", {
             style: "font-size: 10px; color: gray;"
         });
