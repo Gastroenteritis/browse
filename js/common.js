@@ -29,6 +29,9 @@ var onReady = async function() {}; // お好みにオーバーライドする
  */
 var onLoad = async function() {}; // お好みにオーバーライドする
 
+/**
+ * メインの処理
+ */
 $(async function() {
     Promise.all(promises).then(async function() {
         // ページの構成
@@ -42,6 +45,14 @@ $(async function() {
         await onLoad();
     })
 });
+
+/**
+ *  jQueryでHTMLのデコードを行う
+ */
+function decodeHtml(html) {
+    console.log(html);
+    return $("<div/>").html(html).text();
+}
 
 /**
  * ウィンドウ最上部へスクロールする

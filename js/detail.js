@@ -6,7 +6,10 @@ const fileName = new URL(window.location.href).searchParams.get("file");
  */
 onReady = async function() {
     var thread = board.threadList[fileName];
-    if(!thread) thread = Object.entries(board.threadList)[0][1]; // 引数が間違ってたら一個目を使う
+    // 引数が間違ってたら最新スレッドを表示
+    if(!thread) {
+        thread = Object.entries(board.threadList)[0][1];
+    }
 
     // サイドバーの初期化
     $("#side-bar").append(board.toHTML(fileName));
