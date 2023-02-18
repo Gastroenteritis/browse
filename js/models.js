@@ -36,7 +36,7 @@ class Response {
         }).text(self.id));
         const $body = $("<div></div>", {
             class: "text-break"
-        }).text(self.message);
+        }).html(self.message);
         const $footer = $("<div></div>", {
             style: "font-size: 10px; color: gray;"
         });
