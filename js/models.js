@@ -15,6 +15,14 @@ class Response {
         this.id = id;
     }
 
+    /**
+     * テキストのリンクを置換する
+     * @param {*} text 
+     */
+    replaceLink(text) {
+        return text.replace(/(https?:\/\/[\x21-\x7e]+)/g, '<a href="$1" target="_blank">$1</a>');
+    }
+
     toHTML() {
         const self = this;
         const $elem = $("<div></div>", {
@@ -36,7 +44,7 @@ class Response {
         }).text(self.id));
         const $body = $("<div></div>", {
             class: "text-break"
-        }).html(self.message);
+        }).html(self.replaceLink(self.message));
         const $footer = $("<div></div>", {
             style: "font-size: 10px; color: gray;"
         });
