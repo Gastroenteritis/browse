@@ -16,32 +16,27 @@ class Response {
     }
 
     /**
-     * AタグとImgタグを生成する
-     * @param {*} text 
+     * 埋め込みコンテンツを置換します。
+     * @param {String} text 置換前のテキスト
+     * @returns 
      */
     replaceHtml(text) {
         const self = this;
         return text.replace(/(https?:\/\/[\x21-\x7e]+)/g, function(url) {
             // 画像
             if(url.match(/\.(jpg|jpeg|png|gif)$/)) {
-                return '<a href="' + url + '" target="_blank"><img src="' + url + '" alt="' + url + '" class="img-fluid mb-1"></a>';
+                return '<div class="preview"><a href="' + url + '" target="_blank"><img src="' + url + '" alt="' + url + '" class="img-fluid mb-1"></a></div>';
             }
             // Youtube
             else if(url.match(/https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/)) {
                 const id = url.match(/https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/)[1];
-                return '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
-            }
-            // Twitter
-            else if(url.match(/https:\/\/twitter\.com\/([a-zA-Z0-9_-]+)\/status\/([0-9]+)/)) {
-                const id = url.match(/https:\/\/twitter\.com\/([a-zA-Z0-9_-]+)\/status\/([0-9]+)/)[2];
-                return '<blockquote class="twitter-tweet"><a href="' + url + '"></a></blockquote><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>';
+                return '<iframe src="https://www.youtube.com/embed/' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
             }
             // nicovideo
             else if(url.match(/https:\/\/www\.nicovideo\.jp\/watch\/([a-zA-Z0-9]+)/)) {
                 const id = url.match(/https:\/\/www\.nicovideo\.jp\/watch\/([a-zA-Z0-9]+)/)[1];
-                return '<iframe width="560" height="315" src="https://embed.nicovideo.jp/watch/' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                return '<iframe src="https://embed.nicovideo.jp/watch/' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
             }
-            // 
             // その他のリンク
             else {
                 return '<a href="' + url + '" target="_blank">' + url + '</a>';
@@ -57,7 +52,7 @@ class Response {
         const self = this;
         let message = self.replaceHtml(self.message);
         const $elem = $("<div></div>", {
-            class: "container-fluid border-top",
+            class: "response container-fluid border-top",
         });
         const $header = $("<div></div>", {
             class: "row row-cols-auto",
