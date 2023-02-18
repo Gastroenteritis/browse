@@ -47,6 +47,14 @@ $(async function() {
 });
 
 /**
+ *  jQueryでHTMLのデコードを行う
+ */
+function decodeHtml(html) {
+    console.log(html);
+    return $("<div/>").html(html).text();
+}
+
+/**
  * ウィンドウ最上部へスクロールする
  */
 function scrollToTop() {
