@@ -40,15 +40,15 @@ onReady = async function() {
     const cookies = getCookieArray();
     $("input[name='mail']").val(cookies['MAIL']);
     $("input[name='FROM']").val(cookies['NAME']);
-
-    // スクロールボタンの制御を定義
-    initScrollButtonControll();
 }
 
 /**
  * ページの読み込み完了時に呼び出される。
  */
 onLoad = async function() {
+    // スクロールボタンの制御を定義
+    initScrollButtonControll();
+
     // ページをスクロール
     loadScroll();
 
@@ -69,11 +69,17 @@ function initScrollButtonControll() {
     let showBottomButton = true;
     const $topButton = $(".topButton");
     const $bottomButton = $(".bottomButton");
-    $topButton.hide();
     const topButtonHeight = 200;
     const bottomButtonHeight = 200;
     $topButton.click(scrollToTop);
     $bottomButton.click(scrollToBottom);
+
+    // 初期値の設定
+    $topButton.hide();
+    if($document.height() - $window.height() - $window.scrollTop() <= bottomButtonHeight) {
+        $bottomButton.hide();
+        showBottomButton = false;
+    }
 
     // ボタン制御を定義
     $(window).scroll(function () {
