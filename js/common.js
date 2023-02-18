@@ -29,6 +29,9 @@ var onReady = async function() {}; // お好みにオーバーライドする
  */
 var onLoad = async function() {}; // お好みにオーバーライドする
 
+/**
+ * メインの処理
+ */
 $(async function() {
     Promise.all(promises).then(async function() {
         // ページの構成
