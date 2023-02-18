@@ -22,9 +22,17 @@ class Response {
     replaceHtml(text) {
         const self = this;
         return text.replace(/(https?:\/\/[\x21-\x7e]+)/g, function(url) {
+            // ‰æ‘œ
             if(url.match(/\.(jpg|jpeg|png|gif)$/)) {
                 return '<a href="' + url + '" target="_blank"><img src="' + url + '" alt="' + url + '" class="img-fluid mb-1"></a>';
-            } else {
+            }
+            // Youtube
+            else if(url.match(/https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/)) {
+                const id = url.match(/https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/)[1];
+                return '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            }
+            // ‚»‚Ì‘¼‚ÌƒŠƒ“ƒN
+            else {
                 return '<a href="' + url + '" target="_blank">' + url + '</a>';
             }
         });
