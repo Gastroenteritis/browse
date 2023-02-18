@@ -11,13 +11,13 @@ const board = new Board();
 const promises = [];
 promises.push(board.loadSetting());
 promises.push(board.loadThreadList());
-var main = function() {}; // お好みにオーバーライドする
+var main = async function() {}; // お好みにオーバーライドする
 
-$(function() {
-    Promise.all(promises).then(values => {
+$(async function() {
+    Promise.all(promises).then(async function() {
         $("#nav-title").text(board.setting["BBS_TITLE"]);
         $("title").text(board.setting["BBS_TITLE"]);
-        main();
+        await main();
         $(".default-hidden").show(); // ぱっと切り替えた方がかっこいい
         $(".default-show").hide();
 
@@ -70,11 +70,11 @@ function initScrollButtonControll() {
 }
 
 function scrollToTop() {
-    $('html, body').animate({ scrollTop: 0 }, 'fast');
+    $('html, body').scrollTop(0);
 }
 
 function scrollToBottom() {
-    $('html, body').animate({ scrollTop: $(document).height() }, 'fast');
+    $('html, body').scrollTop($(document).height());
 }
 
 /**

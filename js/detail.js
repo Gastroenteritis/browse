@@ -1,18 +1,17 @@
 const fileName = new URL(window.location.href).searchParams.get("file");
 
-main = function() {
+main = async function() {
     var thread = board.threadList[fileName];
     if(!thread) thread = Object.entries(board.threadList)[0][1]; // 引数が間違ってたら一個目を使う
 
     // サイドバーの初期化
     $("#side-bar").append(board.toHTML(fileName));
-    thread.load().then(function() {
-        $("#response-list").append(thread.toHTML());
-        loadScroll();
+    await thread.load();
+    $("#response-list").append(thread.toHTML());
+    loadScroll();
 
-        $(window).scroll(function() {
-            saveScroll();
-        });
+    $(window).scroll(function() {
+        saveScroll();
     });
 
     // 送信フォームの初期化
