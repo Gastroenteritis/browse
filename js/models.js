@@ -27,24 +27,19 @@ class Response {
                 return '<div class="preview"><a href="' + url + '" target="_blank"><img src="' + url + '" alt="' + url + '" class="img-fluid mb-1"></a></div>';
             }
             // Youtube
-            else if(url.match(/(https|http):\/\/(www|m)\.youtube\.com\/watch\?v=([a-zA-Z0-9]+)/)) {
-                const id = url.match(/(https|http):\/\/(www|m)\.youtube\.com\/watch\?v=([a-zA-Z0-9]+)/)[3];
+            else if(url.match(/(https|http):\/\/(www|m)\.youtube\.com\/watch\?v=([a-zA-Z0-9\-_]+)/)) {
+                const id = url.match(/(https|http):\/\/(www|m)\.youtube\.com\/watch\?v=([a-zA-Z0-9\-_]+)/)[3];
                 return '<iframe src="https://www.youtube.com/embed/' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
             }
             // Youtube íZèkî≈
-            else if(url.match(/(https|http):\/\/youtu\.be\/([a-zA-Z0-9]+)/)) {
-                const id = url.match(/(https|http):\/\/youtu\.be\/([a-zA-Z0-9]+)/)[2];
+            else if(url.match(/(https|http):\/\/youtu\.be\/([a-zA-Z0-9\-_]+)/)) {
+                const id = url.match(/(https|http):\/\/youtu\.be\/([a-zA-Z0-9\-_]+)/)[2];
                 return '<iframe src="https://www.youtube.com/embed/' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
             }
             // nicovideo
-            else if(url.match(/(https|http):\/\/www\.nicovideo\.jp\/watch\/([a-zA-Z0-9]+)/)) {
-                const id = url.match(/(https|http):\/\/www\.nicovideo\.jp\/watch\/([a-zA-Z0-9]+)/)[2];
-                return '<iframe src="https://embed.nicovideo.jp/watch/' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
-            }
-            // nicovideo íZèkî≈
-            else if(url.match(/(https|http):\/\/sp\.nicovideo\.jp\/watch\/([a-zA-Z0-9]+)/)) {
-                const id = url.match(/(https|http):\/\/sp\.nicovideo\.jp\/watch\/([a-zA-Z0-9]+)/)[2];
-                return '<iframe src="https://embed.nicovideo.jp/watch/' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            else if(url.match(/(https|http):\/\/(www|sp)\.nicovideo\.jp\/watch\/sm([a-zA-Z0-9]+)/)) {
+                const id = url.match(/(https|http):\/\/(www|sp)\.nicovideo\.jp\/watch\/sm([a-zA-Z0-9]+)/)[3];
+                return '<iframe src="https://embed.nicovideo.jp/watch/sm' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
             }
             // ÇªÇÃëºÇÃÉäÉìÉN
             else {
