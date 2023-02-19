@@ -1,3 +1,43 @@
+class User {
+    id;
+    count;
+    responseList;
+
+    constructor(id) {
+        this.id = id;
+        this.responseList = [];
+        count = 0;
+    }
+
+    /**
+     * レスポンスを追加します。
+     */
+    addResponse(response) {
+        this.responseList.push(response);
+        count++;
+    }
+
+    /**
+     * このインスタンスの内容をHTML要素に変換します。
+     * @returns {jQuery} 変換後のHTML要素
+     */
+    toHTML() {
+        const $html = $("<div/>", {
+            class: "user",
+            "data-id": this.id,
+        });
+        $html.append($("<div/>", {
+            class: "user-name",
+            text: this.id,
+        }));
+        $html.append($("<div/>", {
+            class: "user-count",
+            text: this.count,
+        }));
+        return $html;
+    }
+}
+
 class Response {
     datetime;
     message;
@@ -56,7 +96,7 @@ class Response {
         const self = this;
         let message = self.replaceHtml(self.message);
         const $elem = $("<div></div>", {
-            class: "response container-fluid border-top",
+            class: "response container-fluid border-top mb-5",
         });
         const $header = $("<div></div>", {
             class: "row row-cols-auto",
@@ -93,20 +133,26 @@ class Thread {
     count;
     fileName;
     responseList;
+    range;
+    lastModified;
+    isReset; // リセットされたかどうか
 
     constructor(title, count, datetime, fileName) {
         this.count = count;
         this.title = title;
         this.datetime = datetime;
         this.fileName = fileName;
+        this.responseList = [];
+        this.range = 0;
+        this.lastModified = "";
+        this.isReset = false;
     }
 
     toHTML() {
         const self = this;
-        const $elem = $("<div></div>").append($("<h3></h3>").html(self.title));
+        const $elem = $("<div></div>");
         $.each(self.responseList, function() {
             $elem.append(this.toHTML());
-            $elem.append($("<br><br>"));
         });
 
         if(DEBUG) console.log("レス一覧を生成しました。", $elem);
@@ -141,10 +187,10 @@ class Thread {
                 dataType: 'html',
                 cache: false
             }
-        ).done(function(text) {
+        ).then(function(text) {
             if(DEBUG)  console.log('書き込みました。');
             location.reload();
-        }).fail(function (jqXHR, textStatus, errorThrown) {
+        }).catch(function (jqXHR, textStatus, errorThrown) {
             const msg = '書き込みに失敗しました。';
             error(msg, jqXHR, textStatus, errorThrown);
         });
@@ -169,12 +215,26 @@ class Thread {
                 url: '../dat/' + encodeURIComponent(self.fileName),
                 type: 'get',
                 dataType: 'text',
+                headers: {
+                    'Range': 'bytes=' + (self.range) + '-', // レスの範囲を指定
+                    'If-Modified-Since': self.lastModified, // 最終更新日時を指定
+                },
                 cache: false
             }
-        ).done(function(text) {
-            self.responseList = [];
+        ).then(function(text, textStatus, jqXHR) {
+            self.isReset = false;
+            if(text == null || text == "") {
+                if(DEBUG) console.log("更新はありません。");
+                return;
+            }
+            // あぼーん検知
+            if(self.responseList.length > 0 && text.charCodeAt(0) !== 0x0a) { // 差分取得なのに、"\n"で始まらない場合
+                self.reset();
+                return;
+            }
             // パース
             const rowArray = text.split('\n');
+            const offset = self.responseList.length;
             for(let i = 0; i < rowArray.length; i++) {
                 const dataArray = rowArray[i].split("<>");
                 if(dataArray.length === 5){
@@ -187,15 +247,37 @@ class Thread {
                         dataArray[0],
                         dataArray[1],
                         id,
-                        i + 1,
+                        i + 1 + offset,
                     ));
                 }
             }
-            if(DEBUG)  console.log(self.fileName + "を読み込みました。", self.responseList);
-        }).fail(function (jqXHR, textStatus, errorThrown) {
+            // ヘッダー情報を取得
+            self.lastModified = jqXHR.getResponseHeader('Last-Modified');
+            const range = jqXHR.getResponseHeader('Content-Length').split("/");
+            self.range += Number(range.length > 1 ? range[1] : range[0]) -1; // 改行コードを差分取得するために-1する
+            
+            if(DEBUG) console.log(self.fileName + "を読み込みました。", self);
+
+        }).catch(function (jqXHR, textStatus, errorThrown) {
+            // あぼーんの影響で取得に失敗した場合
+            if(jqXHR.status === 416) {
+                self.reset();
+                return;
+            }
+
             const msg = this.fileName + 'の読み取りに失敗しました。';
             error(msg, jqXHR, textStatus, errorThrown);
         });
+    }
+
+    reset() {
+        const self = this;
+        self.range = 0;
+        self.lastModified = "";
+        self.responseList = [];
+        self.isReset = true;
+
+        if(DEBUG) console.log("あぼーんを検知しました。\n" + self.fileName + "をリセットしました。", self);
     }
 }
 
@@ -257,7 +339,7 @@ class Board {
                 dataType: 'text',
                 cache: false
             }
-        ).done(function(text) {
+        ).then(function(text) {
             self.threadList = {};
             // パース
             const rowArray = text.split('\n');
@@ -275,7 +357,7 @@ class Board {
                 }
             }
             if(DEBUG)  console.log("subject.txtを読み込みました。", self.threadList);
-        }).fail(function (jqXHR, textStatus, errorThrown) {
+        }).catch(function (jqXHR, textStatus, errorThrown) {
             const msg = 'subject.txtの読み取りに失敗しました。';
             error(msg, jqXHR, textStatus, errorThrown);
         });
@@ -294,7 +376,7 @@ class Board {
                 dataType: 'text',
                 cache: false
             }
-        ).done(function(text) {
+        ).then(function(text) {
             self.setting = {};
             // パースして格納
             const array = text.split('\n');
@@ -305,7 +387,7 @@ class Board {
                 }
             })
             if(DEBUG) console.log("SETTING.TXTを読み取りました。", self.setting);
-        }).fail(function (jqXHR, textStatus, errorThrown) {
+        }).catch(function (jqXHR, textStatus, errorThrown) {
             const msg = 'SETTING.TXTの読み取りに失敗しました。';
             error(msg, jqXHR, textStatus, errorThrown);
         });

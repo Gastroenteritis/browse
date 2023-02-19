@@ -1,17 +1,20 @@
 // パラメーターの受け取り
 const fileName = new URL(window.location.href).searchParams.get("file");
-
+var thread = null;
 /**
  * ページの初期化
  */
 onReady = async function() {
-    var thread = board.threadList[fileName];
+    thread = board.threadList[fileName];
     if(!thread) {
         thread = Object.entries(board.threadList)[0][1];
     }
 
     // サイドバーの初期化
     $("#side-bar").append(board.toHTML(fileName));
+
+    // スレたいの初期化
+    $("#thread-title").text(thread.title);
 
     // レスポンスリストの初期化
     await thread.load();
@@ -44,7 +47,6 @@ onReady = async function() {
     $("input[name='FROM']").val(cookies['NAME']);
 
     // フォームポストのショートカットを定義
-    //Shiftキー+エンター ←今回のやりたかったこと
     $(window).keydown(function(e){
         if(e.shiftKey){
             if(e.keyCode === 13){
@@ -52,6 +54,25 @@ onReady = async function() {
             }
         }
     });
+}
+
+/**
+ * 非同期でページの再読み込みを行う。
+ */
+async function asyncReload() {
+    let nowLength = thread.responseList.length;
+    await thread.load();
+    if(thread.isReset) {
+        $("#response-list").empty();
+        nowLength = 0;
+        await thread.load();
+    }
+    for(var i=nowLength; i<thread.responseList.length; i++) {
+        $("#response-list").append(thread.responseList[i].toHTML());
+        loadScroll();
+    }
+
+    setTimeout(asyncReload, 3000); // 再起的ループ
 }
 
 /**
@@ -68,6 +89,8 @@ onLoad = async function() {
     $(window).scroll(function() {
         saveScroll();
     });
+
+    asyncReload();
 }
 
 /**
