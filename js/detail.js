@@ -35,10 +35,12 @@ onReady = async function() {
     // 送信ボタンの初期化
     $button = $("button#post-button");
     $button.click(function() {
-        thread.write($form).fail(function() {
-            $(".post-input").prop('disabled', false);
-        });
-        $(".post-input").prop('disabled', true);
+        $button.prop("disabled", true);
+        thread.write($form).done(function() {
+            $form.find("textarea[name='MESSAGE']").val("");           
+        }).always(function() {
+            $button.prop("disabled", false);
+        })
     });
 
     // クッキーモンスター

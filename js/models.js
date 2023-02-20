@@ -188,8 +188,7 @@ class Thread {
                 cache: false
             }
         ).then(function(text) {
-            if(DEBUG)  console.log('‘‚«‚İ‚Ü‚µ‚½B');
-            location.reload();
+            if(DEBUG)  console.log('‘‚«‚İ‚Ü‚µ‚½B')
         }).catch(function (jqXHR, textStatus, errorThrown) {
             const msg = '‘‚«‚İ‚É¸”s‚µ‚Ü‚µ‚½B';
             error(msg, jqXHR, textStatus, errorThrown);
