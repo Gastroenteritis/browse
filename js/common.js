@@ -55,6 +55,13 @@ function decodeHtml(html) {
 }
 
 /**
+ * jQueryでHTMLのエンコードを行う
+ */
+function encodeHtml(html) {
+    return $("<div/>").text(html).html();
+}
+
+/**
  * ウィンドウ最上部へスクロールする
  */
 function scrollToTop() {

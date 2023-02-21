@@ -15,7 +15,6 @@ onReady = async function() {
 
     // スレたいの初期化
     $("#thread-title").text(thread.title);
-
     // レスポンスリストの初期化
     await thread.load();
     $("#response-list").append(thread.toHTML());
