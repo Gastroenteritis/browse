@@ -33,13 +33,13 @@ sjisUrlEncode = function(str) {
  * @param {string} str 文字列
 */
 specialHtmlEncode = function(str) {
-    const regex = /[\u{130D2}-\u{131A7}\u{301C}\u{0000}-\u{001F}\u{007F}-\u{009F}\u{00A0}\u{00AD}\u{2000}-\u{200F}\u{2028}-\u{202F}\u{2060}-\u{206F}\u{FEFF}\u{FFF0}-\u{FFFF}\u{1D173}-\u{1D17A}\u{E0000}-\u{E0FFF}]/gu;
+    // SJISで表現できない文字をエスケープ
+    const regex = /[^\x00-\x7F\xA1-\xDF]|[\x81-\x9F\xE0-\xFC][\x40-\x7E\x80-\xFC]/g;
     return str.replace(regex, function(match) {
         const code = match.codePointAt(0).toString(16);
         return '&#x' + code + ';';
     });
 }
-
 
 /**
  * 文字列中の絵文字をHTMLエンティティに変換する
