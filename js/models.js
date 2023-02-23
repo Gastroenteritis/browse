@@ -1,58 +1,58 @@
 /**
- * •¶š—ñ‚ªShiftJIS‚É•ÏŠ·‚Å‚«‚é‚©‚Ç‚¤‚©‚ğ”»’è‚µ‚Ü‚·B
- * @param {string} str ƒeƒLƒXƒg
+ * æ–‡å­—åˆ—ãŒShiftJISã«å¤‰æ›ã§ãã‚‹ã‹ã©ã†ã‹ã‚’åˆ¤å®šã—ã¾ã™ã€‚
+ * @param {string} str ãƒ†ã‚­ã‚¹ãƒˆ
  */
 isShiftJIS = function(str) {
-    // ‰p”š
+    // è‹±æ•°å­—
     if (str.match(/^[0-9A-Za-z]+$/)) {
         return true;
     }
-    // ”¼ŠpƒJƒi
-    if (str.match(/^[¦-ß]+$/)) {
+    // åŠè§’ã‚«ãƒŠ
+    if (str.match(/^[ï½¦-ï¾Ÿ]+$/)) {
         return true;
     }
-    // ”¼Šp‹L†
+    // åŠè§’è¨˜å·
     if (str.match(/^[!-\/:-@[-`{-~]+$/)) {
         return true;
     }
-    // ”¼ŠpƒXƒy[ƒX
+    // åŠè§’ã‚¹ãƒšãƒ¼ã‚¹
     if (str.match(/^[\s]+$/)) {
         return true;
     }
-    // ‘SŠp•¶š
-    if (str.match(/^[‚Ÿ-‚ñƒ@-ƒ–[ˆê-êXY?]+$/)) {
+    // å…¨è§’æ–‡å­—
+    if (str.match(/^[ã-ã‚“ã‚¡-ãƒ¶ãƒ¼ä¸€-é¾ ã€…ã€†?]+$/)) {
         return true;
     }
-    // ‘SŠp‹L†
-    if (str.match(/^[I-^F-—m-Mo-`]+$/)) {
+    // å…¨è§’è¨˜å·
+    if (str.match(/^[\ï¼-\ï¼\ï¼š-\ï¼ \ï¼»-\ï½€\ï½›-ï½]+$/)) {
         return true;
     }
-    // ‘SŠpƒXƒy[ƒX
+    // å…¨è§’ã‚¹ãƒšãƒ¼ã‚¹
     if (str.match(/^[\u3000]+$/)) {
         return true;
     }
-    // ‚»‚êˆÈŠO
+    // ãã‚Œä»¥å¤–
     return false;
 }
 
 /**
- * •¶š—ñ‚ğSJIS‚É•ÏŠ·‚µ‚ÄURLƒGƒ“ƒR[ƒh‚·‚é
- * @param {string} str •¶š—ñ
+ * æ–‡å­—åˆ—ã‚’SJISã«å¤‰æ›ã—ã¦URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã™ã‚‹
+ * @param {string} str æ–‡å­—åˆ—
  */
 sjisUrlEncodeForHtml = function(str) {
-    // •¶šƒR[ƒh‚Ì”z—ñ‚É•ÏŠ·
+    // æ–‡å­—ã‚³ãƒ¼ãƒ‰ã®é…åˆ—ã«å¤‰æ›
     const unicodeArray = [];
     for (let i = 0; i < str.length; i++) {
-        // •¶šƒR[ƒh‚É•ÏŠ·
+        // æ–‡å­—ã‚³ãƒ¼ãƒ‰ã«å¤‰æ›
         var code = str.charCodeAt(i);
         
-        // ShiftJIS‚É•ÏŠ·‚Å‚«‚é•¶š‚È‚ç
+        // ShiftJISã«å¤‰æ›ã§ãã‚‹æ–‡å­—ãªã‚‰
         if (isShiftJIS(str.charAt(i))) {
             unicodeArray.push(code);
         } 
-        // ShiftJIS‚É•ÏŠ·‚Å‚«‚È‚¢•¶š‚ÍHTMLEntity‚É•ÏŠ·‚·‚é
+        // ShiftJISã«å¤‰æ›ã§ããªã„æ–‡å­—ã¯HTMLEntityã«å¤‰æ›ã™ã‚‹
         else {
-            // ƒTƒƒQ[ƒgƒyƒA‚Ìê‡‚Í‚Q•¶š•ª‚ğ‚P•¶š‚Æ‚µ‚Äˆµ‚¤
+            // ã‚µãƒ­ã‚²ãƒ¼ãƒˆãƒšã‚¢ã®å ´åˆã¯ï¼’æ–‡å­—åˆ†ã‚’ï¼‘æ–‡å­—ã¨ã—ã¦æ‰±ã†
             if (0xd800 <= code && code <= 0xdbff) {
                 const code2 = str.charCodeAt(i + 1);
                 if (0xdc00 <= code2 && code2 <= 0xdfff) {
@@ -60,21 +60,21 @@ sjisUrlEncodeForHtml = function(str) {
                     code = ((code - 0xd800) << 10) + (code2 - 0xdc00) + 0x10000;
                 }
             }
-            // HTMLƒGƒ“ƒeƒBƒeƒB‚É•ÏŠ·
+            // HTMLã‚¨ãƒ³ãƒ†ã‚£ãƒ†ã‚£ã«å¤‰æ›
             const entity = "&#" + code + ";";
-            // entity‚ğ‚P•¶š‚¸‚Â•¶šƒR[ƒh‚É•ÏŠ·‚µ‚Ä”z—ñ‚É’Ç‰Á
+            // entityã‚’ï¼‘æ–‡å­—ãšã¤æ–‡å­—ã‚³ãƒ¼ãƒ‰ã«å¤‰æ›ã—ã¦é…åˆ—ã«è¿½åŠ 
             for (let j = 0; j < entity.length; j++) {
                 unicodeArray.push(entity.charCodeAt(j));
             }
         }
     }
 
-    // SJINS‚É•ÏŠ·
+    // SJINSã«å¤‰æ›
     const sjisBytes = Encoding.convert(unicodeArray, {
         to: 'SJIS',
         from: 'UNICODE',
     });
-    // URLƒGƒ“ƒR[ƒh‚·‚é
+    // URLã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã™ã‚‹
 	return Encoding.urlEncode(sjisBytes);
 };
 
@@ -90,7 +90,7 @@ class User {
     }
 
     /**
-     * ƒŒƒXƒ|ƒ“ƒX‚ğ’Ç‰Á‚µ‚Ü‚·B
+     * ãƒ¬ã‚¹ãƒãƒ³ã‚¹ã‚’è¿½åŠ ã—ã¾ã™ã€‚
      */
     addResponse(response) {
         this.responseList.push(response);
@@ -98,8 +98,8 @@ class User {
     }
 
     /**
-     * ‚±‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Ì“à—e‚ğHTML—v‘f‚É•ÏŠ·‚µ‚Ü‚·B
-     * @returns {jQuery} •ÏŠ·Œã‚ÌHTML—v‘f
+     * ã“ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®å†…å®¹ã‚’HTMLè¦ç´ ã«å¤‰æ›ã—ã¾ã™ã€‚
+     * @returns {jQuery} å¤‰æ›å¾Œã®HTMLè¦ç´ 
      */
     toHTML() {
         const $html = $("<div/>", {
@@ -136,13 +136,13 @@ class Response {
     }
 
     /**
-     * –„‚ß‚İƒRƒ“ƒeƒ“ƒc‚ğ’uŠ·‚µ‚Ü‚·B
-     * @param {String} text ’uŠ·‘O‚ÌƒeƒLƒXƒg
+     * åŸ‹ã‚è¾¼ã¿ã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã‚’ç½®æ›ã—ã¾ã™ã€‚
+     * @param {String} text ç½®æ›å‰ã®ãƒ†ã‚­ã‚¹ãƒˆ
      * @returns 
      */
     replaceHtml(text) {
         return text.replace(/((https|http):\/\/[\x21-\x7e]+)/g, function(url) {
-            // ‰æ‘œ
+            // ç”»åƒ
             if(url.match(/\.(jpg|jpeg|png|gif)$/)) {
                 return '<div class="preview"><a href="' + url + '" target="_blank"><img src="' + url + '" alt="' + url + '" class="img-fluid mb-1"></a></div>';
             }
@@ -151,7 +151,7 @@ class Response {
                 const id = url.match(/(https|http):\/\/(www|m)\.youtube\.com\/watch\?v=([a-zA-Z0-9\-_]+)/)[3];
                 return '<iframe src="https://www.youtube.com/embed/' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
             }
-            // Youtube ’Zk”Å
+            // Youtube çŸ­ç¸®ç‰ˆ
             else if(url.match(/(https|http):\/\/youtu\.be\/([a-zA-Z0-9\-_]+)/)) {
                 const id = url.match(/(https|http):\/\/youtu\.be\/([a-zA-Z0-9\-_]+)/)[2];
                 return '<iframe src="https://www.youtube.com/embed/' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
@@ -161,7 +161,7 @@ class Response {
                 const id = url.match(/(https|http):\/\/(www|sp)\.nicovideo\.jp\/watch\/sm([a-zA-Z0-9]+)/)[3];
                 return '<iframe src="https://embed.nicovideo.jp/watch/sm' + id + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
             }
-            // ‚»‚Ì‘¼‚ÌƒŠƒ“ƒN
+            // ãã®ä»–ã®ãƒªãƒ³ã‚¯
             else {
                 return '<a href="' + url + '" target="_blank">' + url + '</a>';
             }
@@ -169,7 +169,7 @@ class Response {
     }
 
     /**
-     * ‚±‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Ì“à—e‚ğHTML—v‘f‚É•ÏŠ·‚µ‚Ü‚·B
+     * ã“ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã®å†…å®¹ã‚’HTMLè¦ç´ ã«å¤‰æ›ã—ã¾ã™ã€‚
      * @returns 
      */
     toHTML() {
@@ -215,7 +215,7 @@ class Thread {
     responseList;
     range;
     lastModified;
-    isReset; // ƒŠƒZƒbƒg‚³‚ê‚½‚©‚Ç‚¤‚©
+    isReset; // ãƒªã‚»ãƒƒãƒˆã•ã‚ŒãŸã‹ã©ã†ã‹
 
     constructor(title, count, datetime, fileName) {
         this.count = count;
@@ -235,19 +235,19 @@ class Thread {
             $elem.append(this.toHTML());
         });
 
-        if(DEBUG) console.log("ƒŒƒXˆê——‚ğ¶¬‚µ‚Ü‚µ‚½B", $elem);
+        if(DEBUG) console.log("ãƒ¬ã‚¹ä¸€è¦§ã‚’ç”Ÿæˆã—ã¾ã—ãŸã€‚", $elem);
         return $elem;
 
     }
 
     getBBSName() {
         const array = new URL(convertPathUrl("../")).pathname.split("/");
-        array.pop(); // ƒSƒ~‚ÍƒSƒ~” ‚Ö
+        array.pop(); // ã‚´ãƒŸã¯ã‚´ãƒŸç®±ã¸
         return array.pop();
     }
 
     getKey() {
-        // ƒtƒ@ƒCƒ‹–¼‚©‚çŠg’£q‚ğœ‚¢‚ÄŠi”[
+        // ãƒ•ã‚¡ã‚¤ãƒ«åã‹ã‚‰æ‹¡å¼µå­ã‚’é™¤ã„ã¦æ ¼ç´
         var subject = this.fileName.split(".");
         subject.pop();
         subject = subject.join(".");
@@ -268,9 +268,9 @@ class Thread {
                 cache: false
             }
         ).then(function(text) {
-            if(DEBUG)  console.log('‘‚«‚İ‚Ü‚µ‚½B')
+            if(DEBUG)  console.log('æ›¸ãè¾¼ã¿ã¾ã—ãŸã€‚')
         }).catch(function (jqXHR, textStatus, errorThrown) {
-            const msg = '‘‚«‚İ‚É¸”s‚µ‚Ü‚µ‚½B';
+            const msg = 'æ›¸ãè¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸã€‚';
             error(msg, jqXHR, textStatus, errorThrown);
         });
     }
@@ -295,23 +295,23 @@ class Thread {
                 type: 'get',
                 dataType: 'text',
                 headers: {
-                    'Range': 'bytes=' + (self.range) + '-', // ƒŒƒX‚Ì”ÍˆÍ‚ğw’è
-                    'If-Modified-Since': self.lastModified, // ÅIXV“ú‚ğw’è
+                    'Range': 'bytes=' + (self.range) + '-', // ãƒ¬ã‚¹ã®ç¯„å›²ã‚’æŒ‡å®š
+                    'If-Modified-Since': self.lastModified, // æœ€çµ‚æ›´æ–°æ—¥æ™‚ã‚’æŒ‡å®š
                 },
                 cache: false
             }
         ).then(function(text, textStatus, jqXHR) {
             self.isReset = false;
             if(text == null || text == "") {
-                if(DEBUG) console.log("XV‚Í‚ ‚è‚Ü‚¹‚ñB");
+                if(DEBUG) console.log("æ›´æ–°ã¯ã‚ã‚Šã¾ã›ã‚“ã€‚");
                 return;
             }
-            // ‚ ‚Ú[‚ñŒŸ’m
-            if(self.responseList.length > 0 && text.charCodeAt(0) !== 0x0a) { // ·•ªæ“¾‚È‚Ì‚ÉA"\n"‚Ån‚Ü‚ç‚È‚¢ê‡
+            // ã‚ã¼ãƒ¼ã‚“æ¤œçŸ¥
+            if(self.responseList.length > 0 && text.charCodeAt(0) !== 0x0a) { // å·®åˆ†å–å¾—ãªã®ã«ã€"\n"ã§å§‹ã¾ã‚‰ãªã„å ´åˆ
                 self.reset();
                 return;
             }
-            // ƒp[ƒX
+            // ãƒ‘ãƒ¼ã‚¹
             const rowArray = text.split('\n');
             const offset = self.responseList.length;
             for(let i = 0; i < rowArray.length; i++) {
@@ -330,21 +330,21 @@ class Thread {
                     ));
                 }
             }
-            // ƒwƒbƒ_[î•ñ‚ğæ“¾
+            // ãƒ˜ãƒƒãƒ€ãƒ¼æƒ…å ±ã‚’å–å¾—
             self.lastModified = jqXHR.getResponseHeader('Last-Modified');
             const range = jqXHR.getResponseHeader('Content-Length').split("/");
-            self.range += Number(range.length > 1 ? range[1] : range[0]) -1; // ‰üsƒR[ƒh‚ğ·•ªæ“¾‚·‚é‚½‚ß‚É-1‚·‚é
+            self.range += Number(range.length > 1 ? range[1] : range[0]) -1; // æ”¹è¡Œã‚³ãƒ¼ãƒ‰ã‚’å·®åˆ†å–å¾—ã™ã‚‹ãŸã‚ã«-1ã™ã‚‹
             
-            if(DEBUG) console.log(self.fileName + "‚ğ“Ç‚İ‚İ‚Ü‚µ‚½B", self);
+            if(DEBUG) console.log(self.fileName + "ã‚’èª­ã¿è¾¼ã¿ã¾ã—ãŸã€‚", self);
 
         }).catch(function (jqXHR, textStatus, errorThrown) {
-            // ‚ ‚Ú[‚ñ‚Ì‰e‹¿‚Åæ“¾‚É¸”s‚µ‚½ê‡
+            // ã‚ã¼ãƒ¼ã‚“ã®å½±éŸ¿ã§å–å¾—ã«å¤±æ•—ã—ãŸå ´åˆ
             if(jqXHR.status === 416) {
                 self.reset();
                 return;
             }
 
-            const msg = this.fileName + '‚Ì“Ç‚İæ‚è‚É¸”s‚µ‚Ü‚µ‚½B';
+            const msg = this.fileName + 'ã®èª­ã¿å–ã‚Šã«å¤±æ•—ã—ã¾ã—ãŸã€‚';
             error(msg, jqXHR, textStatus, errorThrown);
         });
     }
@@ -356,28 +356,29 @@ class Thread {
         self.responseList = [];
         self.isReset = true;
 
-        if(DEBUG) console.log("‚ ‚Ú[‚ñ‚ğŒŸ’m‚µ‚Ü‚µ‚½B\n" + self.fileName + "‚ğƒŠƒZƒbƒg‚µ‚Ü‚µ‚½B", self);
+        if(DEBUG) console.log("ã‚ã¼ãƒ¼ã‚“ã‚’æ¤œçŸ¥ã—ã¾ã—ãŸã€‚\n" + self.fileName + "ã‚’ãƒªã‚»ãƒƒãƒˆã—ã¾ã—ãŸã€‚", self);
     }
 }
 
 /**
- * ”Â‚ğ•\Œ»‚µ‚Ü‚·BŠeíİ’è’l‚âƒXƒŒƒbƒh‚ÌƒŠƒXƒg‚ğ‚¿‚Ü‚·B
+ * æ¿ã‚’è¡¨ç¾ã—ã¾ã™ã€‚å„ç¨®è¨­å®šå€¤ã‚„ã‚¹ãƒ¬ãƒƒãƒ‰ã®ãƒªã‚¹ãƒˆã‚’æŒã¡ã¾ã™ã€‚
  */
 class Board {
     setting;
     threadList;
 
     /**
-     * ‚¤‚¨‚¨‚¨‚¨‚¨‚¨‚¨‚¨IIIIƒSƒŠ‰Ÿ‚¹I‚¢‚¯I‚¨‚¹I
-     * @returns DOM—v‘fiƒXƒŒˆê——j
+     * ã†ãŠãŠãŠãŠãŠãŠãŠãŠï¼ï¼ï¼ï¼ã‚´ãƒªæŠ¼ã›ï¼ã„ã‘ï¼ãŠã›ï¼
+     * @returns DOMè¦ç´ ï¼ˆã‚¹ãƒ¬ä¸€è¦§ï¼‰
      */
     toHTML(fileName) {
+        const self = this;
         const $elem = $("<div></div>");
-        $.each(board.threadList, function() {
+        $.each(self.threadList, function() {
             const thread = this;
             const borderType = thread.fileName === fileName ? "border-primary border-3" : "border-secondary";
             const $row = $("<a></a>", {
-                href: "./detail.html?file=" + encodeURIComponent(thread.fileName), // URLƒGƒ“ƒR‚Í‚Ù‚Æ‚ñ‚Ç•K—v‚ ‚è‚Ü‚¹‚ñ‚ªA‚¨‚Ü‚¶‚È‚¢‚Å‚·
+                href: "./detail.html?file=" + encodeURIComponent(thread.fileName), // URLã‚¨ãƒ³ã‚³ã¯ã»ã¨ã‚“ã©å¿…è¦ã‚ã‚Šã¾ã›ã‚“ãŒã€ãŠã¾ã˜ãªã„ã§ã™
                 style: "text-decoration: none; color: black;",
             }).append(
                 $("<div></div>", {
@@ -400,12 +401,24 @@ class Board {
             );
             $elem.append($row);
         })
-        if(DEBUG) console.log("ƒXƒŒˆê——‚ğ¶¬‚µ‚Ü‚µ‚½B", $elem);
+        if(DEBUG) console.log("ã‚¹ãƒ¬ä¸€è¦§ã‚’ç”Ÿæˆã—ã¾ã—ãŸã€‚", $elem);
         return $elem;
     }
 
     /**
-     * ÅV‚Ìsubject.txt‚ğ“Ç‚İæ‚èAthreadList‚ğXV‚µ‚Ü‚·B
+     * éåŒæœŸå‡¦ç†ã‚’é–‹å§‹ã—ã¾ã™ã€‚
+     * å…·ä½“çš„ã«ã¯SETTING.TXTã¨subject.txtã‚’èª­ã¿å–ã‚Šã¾ã™ã€‚
+     * @returns Promiseã®é…åˆ—
+    */
+    load() {
+        const promises = [];
+        promises.push(this.loadThreadList());
+        promises.push(this.loadSetting());
+        return promises;
+    }
+
+    /**
+     * æœ€æ–°ã®subject.txtã‚’èª­ã¿å–ã‚Šã€threadListã‚’æ›´æ–°ã—ã¾ã™ã€‚
      * @returns 
      */
     loadThreadList() {
@@ -420,30 +433,30 @@ class Board {
             }
         ).then(function(text) {
             self.threadList = {};
-            // ƒp[ƒX
+            // ãƒ‘ãƒ¼ã‚¹
             const rowArray = text.split('\n');
             for(let i = 0; i < rowArray.length; i++) {
                 const dataArray = rowArray[i].split("<>");
                 if(dataArray.length == 2) {
                     const tempArray = dataArray[1].split(" ");
-                    if(tempArray.length > 1) { // ƒXƒŒƒ^ƒC‚É‹ó”’‚ªŠÜ‚Ü‚ê‚Ä‚¢‚éê‡length‚Í‚RˆÈã‚É‚È‚è‚Ü‚·B
+                    if(tempArray.length > 1) { // ã‚¹ãƒ¬ã‚¿ã‚¤ã«ç©ºç™½ãŒå«ã¾ã‚Œã¦ã„ã‚‹å ´åˆlengthã¯ï¼“ä»¥ä¸Šã«ãªã‚Šã¾ã™ã€‚
                         const count = Number(tempArray.pop().replace(/[^0-9]/g, ''));
                         const title = tempArray.join(' ');
-                        const datetime = new Date(Number(dataArray[0].replace(/[^0-9]/g, '')*1000)); // •b‚ğƒ~ƒŠ•b‚É’¼‚µ‚Ä‚Ü‚·B
+                        const datetime = new Date(Number(dataArray[0].replace(/[^0-9]/g, '')*1000)); // ç§’ã‚’ãƒŸãƒªç§’ã«ç›´ã—ã¦ã¾ã™ã€‚
 
                         self.threadList[dataArray[0]] = new Thread(title, count, datetime, dataArray[0]);
                     }
                 }
             }
-            if(DEBUG)  console.log("subject.txt‚ğ“Ç‚İ‚İ‚Ü‚µ‚½B", self.threadList);
+            if(DEBUG)  console.log("subject.txtã‚’èª­ã¿è¾¼ã¿ã¾ã—ãŸã€‚", self.threadList);
         }).catch(function (jqXHR, textStatus, errorThrown) {
-            const msg = 'subject.txt‚Ì“Ç‚İæ‚è‚É¸”s‚µ‚Ü‚µ‚½B';
+            const msg = 'subject.txtã®èª­ã¿å–ã‚Šã«å¤±æ•—ã—ã¾ã—ãŸã€‚';
             error(msg, jqXHR, textStatus, errorThrown);
         });
     }
 
     /**
-     * ÅV‚ÌSETTING.TXT‚ğ“Ç‚İæ‚èAsetting‚ğXV‚µ‚Ü‚·B
+     * æœ€æ–°ã®SETTING.TXTã‚’èª­ã¿å–ã‚Šã€settingã‚’æ›´æ–°ã—ã¾ã™ã€‚
      * @returns 
      */
     loadSetting() {
@@ -457,7 +470,7 @@ class Board {
             }
         ).then(function(text) {
             self.setting = {};
-            // ƒp[ƒX‚µ‚ÄŠi”[
+            // ãƒ‘ãƒ¼ã‚¹ã—ã¦æ ¼ç´
             const array = text.split('\n');
             $.each(array, function() {
                 const keyValueArray = this.split(/(^.+?)(=)/)
@@ -465,9 +478,9 @@ class Board {
                     self.setting[$.trim(keyValueArray[1])] = $.trim(keyValueArray[3]);
                 }
             })
-            if(DEBUG) console.log("SETTING.TXT‚ğ“Ç‚İæ‚è‚Ü‚µ‚½B", self.setting);
+            if(DEBUG) console.log("SETTING.TXTã‚’èª­ã¿å–ã‚Šã¾ã—ãŸã€‚", self.setting);
         }).catch(function (jqXHR, textStatus, errorThrown) {
-            const msg = 'SETTING.TXT‚Ì“Ç‚İæ‚è‚É¸”s‚µ‚Ü‚µ‚½B';
+            const msg = 'SETTING.TXTã®èª­ã¿å–ã‚Šã«å¤±æ•—ã—ã¾ã—ãŸã€‚';
             error(msg, jqXHR, textStatus, errorThrown);
         });
     }
