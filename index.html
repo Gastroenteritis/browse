@@ -1,64 +1,197 @@
 <!DOCTYPE html>
 <html lang="ja">
     <head>
+        <!-- Meta -->
         <meta charset="UTF-8">
-        <title>ロード中</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="Pragma" content="no-cache">
         <meta http-equiv="Cache-Control" content="no-cache">
-        <!-- CDN From -->
-        <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        <meta http-equiv="Expires" content="0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="format-detection" content="telephone=no">
+        <meta name="description" content="BBS">
+        <meta name="keywords" content="BBS">
+        <meta name="author" content="BBS">
+        <meta name="theme-color" content="#ffffff">
+        <link rel="icon" href="./img/favicon.ico">
+        <link rel="apple-touch-icon" href="./img/apple-touch-icon.png">
+        <title>ロード中</title>
+
+        <!-- CDN -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
-        <script src="https://unpkg.com/vue-router@3.5.2/dist/vue-router.js"></script>
-        <script src="https://unpkg.com/http-vue-loader"></script>
-        <script src="https://cdn.jsdelivr.net/npm/vue-simple-spinner@1.2.8/dist/vue-simple-spinner.min.js"></script>
-        <!-- CDN To -->
+        <script src="https://unpkg.com/vue@3"></script>
+        <script src="https://unpkg.com/vue-router@4"></script>
+        <script src="https://cdn.jsdelivr.net/npm/http-vue-loader@1.4.2/src/httpVueLoader.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/encoding-japanese/2.0.0/encoding.min.js" integrity="sha512-AhAMtLXTbhq+dyODjwnLcSlytykROxgUhR+gDZmRavVCNj6Gjta5l+8TqGAyLZiNsvJhh3J83ElyhU+5dS2OZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         
-        <link rel="stylesheet" href="./css/common.css?ver=20230219"/>
+        <!-- 固有 -->
         <script type="text/javascript" src="./SETTING.JS?ver=20230219"></script>
-        <script type="text/javascript" src="./js/models.js?ver=20230220"></script>
-        <script type="text/javascript" src="./app.js?ver=20230220"></script>
+        <script type="text/javascript" src="./lib/ZerochModels.js?ver=20230220"></script>
+        <link rel="stylesheet" href="./css/common.css?ver=20230219"/>
+        <script type="text/javascript" src="./js/common.js?ver=20230219"></script>
     </head>
-    <body class="vh-100">
-        <div id="app">
-            <!-- NavBar From -->
-            <div class="row">
-                <div class="col-12 sticky-top">
-                    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <body>
+        <!-- ローディング画面 -->
+        <div id="appLoading" class="h-100 w-100 p-5 bg-light loading text-center" style="position: fixed; top: 0; left: 0; opacity: 1; z-index: 2000;">
+            <div class="spinner-border text-primary" role="status" style="opacity: 1; z-index: 2010; width: 5rem; height: 5rem;"></div>
+            <p>ちょっと待ってください</p>
+        </div>
+
+        <div id="app" class="container-fluid bg-light p-0">
+            <!-- ヘッダー -->
+            <div class="row sticky-top w-100 m-0 bg-light">
+                <div class="col-12 border-bottom">
+                    <nav class="navbar navbar-expand-md navbar-light">
                         <div class="container-fluid">
-                            <a class="navbar-brand" href="./index.html" id="nav-title"><!-- ここにBBS_TITLEが入ります。 --></a>
+                            <router-link :to="{ name: 'top', }" class="navbar-brand">{{ bbsTitle }}</router-link>
                             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                                 <span class="navbar-toggler-icon"></span>
                             </button>
                             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                <ul class="navbar-nav me-auto">
                                     <li class="nav-item">
                                         <a class="nav-link" aria-current="page" href="./index.html">スレッド一覧</a>
                                     </li>
-                                    <li class="nav-item">
+                                    <!-- <li class="nav-item">
                                         <a class="nav-link" aria-current="page" href="./index.html">スレ立て</a>
-                                    </li>
+                                    </li> -->
                                     <li class="nav-item">
-                                        <a class="nav-link" aria-current="page" href="../index.html">従来版</a>
+                                        <!-- <a class="nav-link" aria-current="page" href="../index.html">従来版</a> -->
+                                        <a class="nav-link" aria-current="page" href="javascript:(function(){const res = confirm('このページを離れます\nよろしいですか？');if(res){location.href = '../index.html';};})()">従来版</a>
                                     </li>
                                 </ul>
-                                <form class="d-flex">
+                                <!-- <form class="d-flex">
                                     <input class="form-control me-2" type="search" placeholder="キーワード" aria-label="Search">
                                     <button class="btn btn-outline-success text-nowrap" type="submit">検索</button>
-                                </form>
+                                </form> -->
                             </div>
                         </div>
                     </nav>
                 </div>
             </div>
-            <!-- NavBar To -->
-            <!-- MainContents From -->
-            <div class="row">
-                <router-view></router-view>
+            <div class="flex-row d-flex" style="height: calc(100vh - 56px);">
+                <!-- サイドバー　-->
+                <div v-if="showSideBarFlag" class="d-none d-md-block border-end sticky-top overflow-scroll side-bar" style="max-width: 350px; min-width: 350px;">
+                    <div v-for="thread in threadList" :key="thread">
+                        <router-link :to="{ name: 'thread', params: { fileName: thread.fileName } }">
+                            <div class="border-bottom p-1">
+                                <div class="frex-row d-flex text-secondary" style="font-size: 3px;">
+                                    <div>{{ thread.dateTime.getFullYear() + "/" + ('0' + (thread.dateTime.getMonth() + 1)).slice(-2) + "/" + ('0' + thread.dateTime.getDate()).slice(-2) + " " + ('0' + thread.dateTime.getHours()).slice(-2) + ":" + ('0' + thread.dateTime.getMinutes()).slice(-2) }}</div>
+                                </div>
+                                <div class="row ps-2">
+                                    <div class="col-10">
+                                        <div class="text-truncate title" v-bind:title="htmlDecode(thread.title)" v-html="thread.title"></div>
+                                    </div>
+                                    <div class="col-2 text-center">
+                                        <span>{{ thread.count }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </router-link>
+                    </div>
+                </div>
+                <div class="h-100 w-100" style="position: relative">
+                    <!-- ローディング画面 コンテンツレベル -->
+                    <div id="loading" class="h-100 w-100 p-5 bg-light loading" style="position: absolute; top: 0; left: 0; opacity: 0.7; z-index: 1950;">
+                        <div class="d-flex justify-content-center align-items-center" >
+                            <div class="spinner-border text-primary" role="status" style="opacity: 1; z-index: 1960; width: 5rem; height: 5rem;"></div>
+                        </div>
+                    </div>
+
+                    <!-- SPA的にはメインのコンテンツ -->
+                    <div style="position: absolute;" class="h-100 w-100 overflow-scroll">
+                        <router-view></router-view>
+                    </div>
+                </div>
             </div>
-            <!-- MainContents To -->
         </div>
     </body>
+    <script>
+        // 消すと呪われるいわくつきのコード
+        $.ajaxSetup({
+            beforeSend : function(xhr) {
+                xhr.overrideMimeType('text/html;charset=Shift_JIS');
+            }
+        });
+
+        // グローバル変数の定義
+        const BOARD = new Board();
+
+        // アプリケーションのビルドとかをする
+        Promise.all(BOARD.load()).then(function() { // 初回読み込み完了まで待つ
+            const routes = [
+                { path: '/', name: 'top', component: httpVueLoader('./components/Top.vue'), props: { setLoading: setLoading }},
+                { path: '/thread/:fileName', name: 'thread', component: httpVueLoader('./components/Thread.vue'), props: { setLoading: setLoading }},
+                { path: '/list', name: 'list', component: httpVueLoader('./components/ThreadList.vue'), },
+                { path: '/:pathMatch(.*)*', name: '404', component: httpVueLoader('./components/NotFound.vue'), },
+            ]
+            const router = VueRouter.createRouter({
+                history: VueRouter.createWebHashHistory(),
+                routes, // `routes: routes`の短縮表記
+            });
+
+            // アプリケーションのビルド
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        board: BOARD,
+                        bbsTitle: BOARD.setting["BBS_TITLE"],
+                        threadList: BOARD.threadList,
+                        showSideBarFlag: true, // サイドバーはこのフラグ以外にもBootStrapによるレスポンシブ制御によって表示・非表示が切り替わる点を留意すること(コレは言うなれば主電源です)
+                        loading: true,
+                    }
+                },
+                methods: {
+                    htmlDecode: function(html) {
+                        var txt = document.createElement("textarea");
+                        txt.innerHTML = html;
+                        return txt.value;
+                    },
+                    setLoading: function(flag) { // 子からも呼び出せるようにメソッド化
+                        this.loading = flag;
+                    },
+                },
+                created() {
+                    // タイトルを設定
+                    document.title = this.bbsTitle;
+                },
+                mounted() {
+                    // 最上位ロード画面を消す
+                    $("#appLoading").hide('normal');
+                },
+            });
+            app.use(router);
+            app.mount('#app');
+        });
+
+        function setLoading(flag) {
+            if(flag) {
+                $("#loading").show();
+            } else {
+                $("#loading").hide();
+            }
+        }
+
+        /**
+         * 相対パスを絶対パスに変換します。
+         * @param {string} src 変換する相対パス 
+         * @returns 
+         */
+        function convertPathUrl( src ) {
+            return $("<a>").attr("href", src).get(0).href;
+        }
+    </script>
+    <style>
+        a {
+            text-decoration: none;
+        }
+        .side-bar a {
+            color: black;
+        }
+        .side-bar a :hover {
+            background-color: grey;
+        }
+    </style>
 </html>

@@ -8,3 +8,16 @@
         </div>
     </div>
 </template>
+<script>
+    module.exports = {
+        mounted: function() {
+            appLoadEnd();
+        },
+        beforeRouteLeave (to, from, next) {
+            appLoadStart();
+            next();
+        },
+    }
+</script>
+<style>
+</style>
