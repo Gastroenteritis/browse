@@ -16,20 +16,7 @@
 <script>
     module.exports = {
         mounted() {
-            this.$emit('setLoading', false);
+            this.$toggleLoading(false);
         },
-        props: {
-            setLoading: {
-                type: Function,
-                default: () => {}
-            }
-        },
-        mounted() {
-            this.setLoading(false);
-        },
-        beforeRouteLeave(to, from, next) {
-            this.setLoading(true);
-            next();
-        }
     }
 </script>
