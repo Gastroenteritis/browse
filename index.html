@@ -71,7 +71,7 @@
             </div>
             <div class="flex-row d-flex" style="height: calc(100vh - 56px);">
                 <!-- サイドバー　-->
-                <div v-if="$showSideBarFlag" class="d-none d-md-block border-end sticky-top overflow-scroll side-bar" style="max-width: 350px; min-width: 350px;">
+                <div class="d-none d-md-block border-end sticky-top overflow-scroll side-bar" style="max-width: 350px; min-width: 350px;">
                     <div v-for="thread in $board.threadList">
                         <router-link :to="{ name: 'thread', params: { fileName: thread.fileName } }">
                             <div class="border-bottom p-1">
