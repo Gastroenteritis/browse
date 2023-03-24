@@ -19,7 +19,7 @@
 
     <div class="p-2 pb-0">
         <p class="h3 p-2">{{ title }}</p>
-        <div v-for="response in responseList" :key="response" class="border-bottom">
+        <div v-for="response in responseList" class="border-bottom">
             <div class="d-flex" style="font-size: 13px;">
                 <div class="fw-bold me-2">{{ response.count }}</div>
                 <div v-html="response.name" class="text-success"></div>
@@ -84,11 +84,11 @@
 
                 // スレッドを取得
                 this.fileName = this.$route.params.fileName;
-                this.thread = this.$board.threadList[this.fileName];
+                this.thread = this.$board.getThread(this.fileName);
                 if(!this.thread) {
                     // １回目ならスレッドリストを再取得してもう一回やってみる
-                    await this.$board.loadThreadList();
-                    this.thread = this.$board.threadList[this.fileName];
+                    await this.$board.manualReload();
+                    this.thread = this.$board.getThread(this.fileName);
 
                     // それでも無いなら404
                     if(!this.thread) {
@@ -99,7 +99,7 @@
                 await this.thread.load();
 
                 // 細かいのを初期化
-                this.initShortCut(); // ショートカットの初期化
+                // this.initShortCut(); // ショートカットの初期化
                 this.message = "";
                 this.title = this.thread.title;
                 this.datNum = this.thread.getKey();

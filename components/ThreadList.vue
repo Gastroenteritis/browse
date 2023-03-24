@@ -28,10 +28,9 @@
                 threadList: {},
             }
         },
-        // このページで使うメソッドを定義
         methods: {
             fetchThreadList: async function() {
-                await this.$board.loadThreadList();
+                await this.$board.manualReload();
                 this.threadList = this.$board.threadList;
             },
         },

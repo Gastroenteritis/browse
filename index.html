@@ -32,14 +32,14 @@
         <script type="text/javascript" src="./js/common.js?ver=20230219"></script>
     </head>
     <body>
-        <div id="app" class="container-fluid bg-light p-0">
+        <div id="app" class="container-fluid bg-light bg-gradient p-0">
             <!-- ローディング画面 -->
             <div id="appLoading" class="h-100 w-100 p-5 bg-light loading text-center" style="position: fixed; top: 0; left: 0; opacity: 1; z-index: 2000;">
                 <div class="spinner-border text-primary" role="status" style="opacity: 1; z-index: 2010; width: 5rem; height: 5rem;"></div>
                 <p>ちょっと待ってください</p>
             </div>
             <!-- ヘッダー -->
-            <div class="row sticky-top w-100 m-0 bg-light">
+            <div class="row sticky-top w-100 m-0 bg-light bg-gradient">
                 <div class="col-12 border-bottom">
                     <nav class="navbar navbar-expand-md navbar-light">
                         <div class="container-fluid">
@@ -72,11 +72,12 @@
             <div class="flex-row d-flex" style="height: calc(100vh - 56px);">
                 <!-- サイドバー　-->
                 <div class="d-none d-md-block border-end sticky-top overflow-scroll side-bar" style="max-width: 350px; min-width: 350px;">
-                    <div v-for="thread in $board.threadList">
+                    <div v-for="thread in board.threadList" :key="thread.fileName + '@' + thread.count">
                         <router-link :to="{ name: 'thread', params: { fileName: thread.fileName } }">
-                            <div class="border-bottom p-1">
+                            <div class="border-bottom p-1" v-bind:class="{ 'bg-secondary bg-gradient' : thread.isActive() }">
                                 <div class="frex-row d-flex text-secondary" style="font-size: 3px;">
                                     <div>{{ thread.dateTime.getFullYear() + "/" + ('0' + (thread.dateTime.getMonth() + 1)).slice(-2) + "/" + ('0' + thread.dateTime.getDate()).slice(-2) + " " + ('0' + thread.dateTime.getHours()).slice(-2) + ":" + ('0' + thread.dateTime.getMinutes()).slice(-2) }}</div>
+                                    <div class="ms-auto">勢い{{ thread.getIkioi() }}</div>
                                 </div>
                                 <div class="row ps-2">
                                     <div class="col-10">
@@ -92,7 +93,7 @@
                 </div>
                 <div class="h-100 w-100" style="position: relative">
                     <!-- ローディング画面 コンテンツレベル -->
-                    <div id="loading" class="h-100 w-100 p-5 bg-light loading" style="position: absolute; top: 0; left: 0; opacity: 0.7; z-index: 1950;">
+                    <div id="loading" class="h-100 w-100 p-5 bg-light bg-gradient loading" style="position: absolute; top: 0; left: 0; opacity: 0.7; z-index: 1950;">
                         <div class="d-flex justify-content-center align-items-center" >
                             <div class="spinner-border text-primary" role="status" style="opacity: 1; z-index: 1960; width: 5rem; height: 5rem;"></div>
                         </div>
@@ -115,107 +116,112 @@
             }
         });
 
-        (function() {
+        (async function() {
             // アプリケーションのビルドとかをする
             const board = new Board();
-            Promise.all(board.load()).then(function() { // 初回読み込み完了まで待つ
-                const routes = [
-                    { path: '/', name: 'top', component: httpVueLoader('./components/Top.vue'), },
-                    { path: '/thread/:fileName', name: 'thread', component: httpVueLoader('./components/Thread.vue'), },
-                    { path: '/list', name: 'list', component: httpVueLoader('./components/ThreadList.vue'), },
-                    { path: '/:pathMatch(.*)*', name: '404', component: httpVueLoader('./components/NotFound.vue'), },
-                ]
-                const router = VueRouter.createRouter({
-                    history: VueRouter.createWebHashHistory(),
-                    routes, // `routes: routes`の短縮表記
-                });
-
-                // アプリケーションのビルド
-                const app = Vue.createApp({
-                    data() {
-                        return {
-                            showSideBarFlag: true,
-                        }
-                    },
-                    mounted() {
-                        // ページタイトルを設定
-                        document.title = this.$board.setting['BBS_TITLE'];
-
-                        // 最上位ロード画面を消す
-                        this.$appLoading();
-                    },
-                });
-
-                // グローバル変数をVueインスタンスにバインド
-                app.config.globalProperties.$board = board;
-                app.config.globalProperties.$htmlDecode = function(html) {
-                    var txt = document.createElement("textarea");
-                    txt.innerHTML = html;
-                    return txt.value;
-                };
-                app.config.globalProperties.$toggleLoading = function(flag = null) {
-                    if(flag == null) {
-                        if($("#loading").is(":visible")) {
-                            $("#loading").hide();
-                        } else {
-                            $("#loading").show();
-                        }
-                    } else if(flag) {
-                        $("#loading").show();
-                    } else {
-                        $("#loading").hide();
-                    }
-                };
-                app.config.globalProperties.$toggleAppLoading = function(flag = null) {
-                    if(flag == null) {
-                        if($("#appLoading").is(":visible")) {
-                            $("#appLoading").hide();
-                        } else {
-                            $("#appLoading").show();
-                        }
-                    } else if(flag) {
-                        $("#appLoading").show();
-                    } else {
-                        $("#appLoading").hide();
-                    }
-                };
-                app.config.globalProperties.$loading = async function(callback = null) {
-                    const currentRoute = router.currentRoute.value;
-                    this.$toggleLoading(true);
-                    if(callback != null) {
-                        await callback();
-                    }                    
-                    // ロード中にページ遷移している場合はローディング画面を消さない(遷移先の処理に委ねる)
-                    if(currentRoute == router.currentRoute.value) {
-                        this.$toggleLoading(false);
-                    }
-                };
-                app.config.globalProperties.$appLoading = async function(callback = null) {
-                    const currentRoute = router.currentRoute.value;
-                    this.$toggleAppLoading(true);
-                    if(callback != null) {
-                        await callback();
-                    }      
-                    // ロード中にページ遷移している場合はローディング画面を消さない(遷移先の処理に委ねる)
-                    if(currentRoute == router.currentRoute.value) {
-                        this.$toggleAppLoading(false);
-                    }
-                };
-                app.config.globalProperties.$toggleSideBar = function(flag) {
-                    this.showSideBarFlag = flag;
-                };
-
-                // 共通の遷移前の処理
-                router.beforeEach((to, from, next) => {
-                    // ローディング画面を表示
-                    // ロード終了のタイミングはページによって様々なため個別で実装すること
-                    $("#loading").show();
-                    next();
-                });
-
-                app.use(router);
-                app.mount('#app');
+            await board.init();
+            const routes = [
+                { path: '/', name: 'top', component: httpVueLoader('./components/Top.vue'), },
+                { path: '/thread/:fileName', name: 'thread', component: httpVueLoader('./components/Thread.vue'), },
+                { path: '/list', name: 'list', component: httpVueLoader('./components/ThreadList.vue'), },
+                { path: '/:pathMatch(.*)*', name: '404', component: httpVueLoader('./components/NotFound.vue'), },
+            ]
+            const router = VueRouter.createRouter({
+                history: VueRouter.createWebHashHistory(),
+                routes, // `routes: routes`の短縮表記
             });
+
+            // アプリケーションのビルド
+            const app = Vue.createApp({
+                data() {
+                    return {
+                        showSideBarFlag: true,
+                        board: board,
+                    }
+                },
+                mounted() {
+                    // ページタイトルを設定
+                    document.title = this.$board.setting['BBS_TITLE'];
+
+                    // ローディング終了
+                    this.$nextTick(() => {
+                        this.$appLoading();
+                    });
+
+                    // 自動リロード開始
+                    this.board.autoReload();
+                },
+            });
+
+            // グローバル変数をVueインスタンスにバインド
+            app.config.globalProperties.$board = Vue.reactive(board);
+            app.config.globalProperties.$htmlDecode = function(html) {
+                var txt = document.createElement("textarea");
+                txt.innerHTML = html;
+                return txt.value;
+            };
+            app.config.globalProperties.$toggleLoading = function(flag = null) {
+                if(flag == null) {
+                    if($("#loading").is(":visible")) {
+                        $("#loading").hide();
+                    } else {
+                        $("#loading").show();
+                    }
+                } else if(flag) {
+                    $("#loading").show();
+                } else {
+                    $("#loading").hide();
+                }
+            };
+            app.config.globalProperties.$toggleAppLoading = function(flag = null) {
+                if(flag == null) {
+                    if($("#appLoading").is(":visible")) {
+                        $("#appLoading").hide();
+                    } else {
+                        $("#appLoading").show();
+                    }
+                } else if(flag) {
+                    $("#appLoading").show();
+                } else {
+                    $("#appLoading").hide();
+                }
+            };
+            app.config.globalProperties.$loading = async function(callback = null) {
+                const currentRoute = router.currentRoute.value;
+                this.$toggleLoading(true);
+                if(callback != null) {
+                    await callback();
+                }                    
+                // ロード中にページ遷移している場合はローディング画面を消さない(遷移先の処理に委ねる)
+                if(currentRoute == router.currentRoute.value) {
+                    this.$toggleLoading(false);
+                }
+            };
+            app.config.globalProperties.$appLoading = async function(callback = null) {
+                const currentRoute = router.currentRoute.value;
+                this.$toggleAppLoading(true);
+                if(callback != null) {
+                    await callback();
+                }      
+                // ロード中にページ遷移している場合はローディング画面を消さない(遷移先の処理に委ねる)
+                if(currentRoute == router.currentRoute.value) {
+                    this.$toggleAppLoading(false);
+                }
+            };
+            app.config.globalProperties.$toggleSideBar = function(flag) {
+                this.showSideBarFlag = flag;
+            };
+
+            // 共通の遷移前の処理
+            router.beforeEach((to, from, next) => {
+                // ローディング画面を表示
+                // ロード終了のタイミングはページによって様々なため個別で実装すること
+                $("#loading").show();
+                next();
+            });
+
+            app.use(router);
+            app.mount('#app');
         })();
     </script>
     <style>
